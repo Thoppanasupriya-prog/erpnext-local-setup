@@ -1,0 +1,280 @@
+/*
+ * My ERP theme for Frappe Desk (v16).
+ *
+ * Loaded after Frappe's own styles through app_include_css in hooks.py.
+ * It only overrides Frappe's design tokens (Espresso --surface-*, --ink-*,
+ * --outline-* and the legacy aliases) and styles a few layout elements.
+ * No Frappe or ERPNext file is changed. Remove this file from hooks.py to
+ * return to the stock look.
+ */
+
+/* ---------- Brand palette (used only through the tokens below) ---------- */
+:root {
+	--myerp-navy-950: #070f24;
+	--myerp-navy-900: #0b1b3f;
+	--myerp-navy-800: #12275a;
+	--myerp-blue-700: #1e3fae;
+	--myerp-blue-600: #2450c7;
+	--myerp-blue-500: #3b6ae0;
+	--myerp-blue-50: #eef3ff;
+	--myerp-indigo-600: #4f46e5;
+	--myerp-indigo-500: #6366f1;
+
+	--myerp-radius-card: 12px;
+	--myerp-radius-control: 8px;
+	--myerp-ease: cubic-bezier(0.2, 0, 0, 1);
+	--myerp-duration: 160ms;
+}
+
+/*
+ * Theme token blocks use :root:not([data-theme="dark"]) and :root[data-theme="dark"]
+ * (specificity 0,2,0) so they beat Frappe's own ":root, [data-theme=...]" blocks
+ * (0,1,0) without the light values leaking into dark mode through :root.
+ */
+
+/* ---------- Light theme tokens ---------- */
+:root:not([data-theme="dark"]) {
+	--myerp-primary: var(--myerp-blue-600);
+	--myerp-primary-hover: var(--myerp-blue-700);
+	--myerp-primary-soft: var(--myerp-blue-50);
+	--myerp-accent: var(--myerp-indigo-600);
+	--myerp-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.22);
+	--myerp-card-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+	--myerp-card-shadow-hover: 0 4px 12px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+	--myerp-dock-bg: var(--myerp-navy-900);
+	--myerp-dock-ink: #aeb9d6;
+
+	/* Cool-tinted neutrals so greys sit with the navy brand */
+	--surface-gray-1: #f7f9fc;
+	--surface-gray-2: #eff2f8;
+	--surface-gray-3: #e3e8f1;
+	--surface-sidebar: #fafbfe;
+	--outline-gray-1: #e3e8f0;
+	--outline-elevation-1: #e3e8f0;
+	--ink-gray-8: #1f2433; /* body text: charcoal */
+	--ink-gray-9: #111827; /* headings */
+
+	/* Legacy aliases still used by many Desk components */
+	--btn-primary: var(--myerp-primary);
+	--primary: var(--myerp-primary);
+	--primary-color: var(--myerp-primary);
+	--sidebar-select-color: var(--myerp-primary-soft);
+}
+
+/* ---------- Dark theme tokens: navy-tinted, not pure grey ---------- */
+:root[data-theme="dark"] {
+	--myerp-primary: #3b5bdb;
+	--myerp-primary-hover: #4c6ef5;
+	--myerp-primary-soft: rgba(91, 124, 250, 0.16);
+	--myerp-accent: #818cf8;
+	--myerp-focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.35);
+	--myerp-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+	--myerp-card-shadow-hover: 0 6px 16px -4px rgba(0, 0, 0, 0.55);
+	--myerp-dock-bg: var(--myerp-navy-950);
+	--myerp-dock-ink: #8d9bbd;
+
+	--surface-base: #0e1626;
+	--surface-elevation-1: #131d33;
+	--surface-elevation-2: #17223a;
+	--surface-gray-1: #131d33;
+	--surface-gray-2: #1a2540;
+	--surface-gray-3: #22304f;
+	--surface-sidebar: #0c1423;
+	--outline-gray-1: #24324f;
+	--outline-elevation-1: #24324f;
+
+	--btn-primary: var(--myerp-primary);
+	--primary: var(--myerp-primary);
+	--primary-color: var(--myerp-primary);
+	--sidebar-select-color: var(--myerp-primary-soft);
+}
+
+/* ---------- Page header ---------- */
+.page-head {
+	background-color: var(--surface-base);
+	border-bottom: 1px solid var(--outline-gray-1);
+}
+
+.page-title .title-text,
+.page-head .page-title {
+	color: var(--ink-gray-9);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* ---------- Left icon rail (dock): navy brand bar ----------
+ * Frappe's dock styles read --dock-bg, --ink-gray-8, --surface-gray-3 and
+ * --outline-gray-1, so the dock gets its own values for those tokens. */
+.dock {
+	--dock-bg: var(--myerp-dock-bg);
+	--ink-gray-8: #e6ebf7;
+	--ink-gray-6: var(--myerp-dock-ink);
+	--surface-gray-3: rgba(255, 255, 255, 0.1);
+	--outline-gray-1: rgba(255, 255, 255, 0.1);
+	background-color: var(--myerp-dock-bg);
+	border-right: none;
+}
+
+.dock .dock-item {
+	color: var(--myerp-dock-ink);
+	transition: background-color var(--myerp-duration) var(--myerp-ease),
+		color var(--myerp-duration) var(--myerp-ease);
+}
+
+.dock .dock-item:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: #ffffff;
+}
+
+.dock .dock-item.active {
+	background-color: rgba(255, 255, 255, 0.14);
+	color: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Module sidebar ---------- */
+.body-sidebar {
+	background-color: var(--surface-sidebar);
+	border-right: 1px solid var(--outline-gray-1);
+}
+
+.standard-sidebar-item {
+	border-radius: var(--myerp-radius-control);
+	transition: background-color var(--myerp-duration) var(--myerp-ease),
+		color var(--myerp-duration) var(--myerp-ease);
+}
+
+.standard-sidebar-item:hover {
+	background-color: var(--surface-gray-2);
+}
+
+.standard-sidebar-item.active-sidebar {
+	background-color: var(--myerp-primary-soft);
+	color: var(--myerp-primary);
+	font-weight: 600;
+	box-shadow: inset 3px 0 0 var(--myerp-primary);
+}
+
+[data-theme="dark"] .standard-sidebar-item.active-sidebar {
+	color: #c7d2fe;
+}
+
+.standard-sidebar-item.active-sidebar svg {
+	stroke: currentColor;
+}
+
+/* ---------- Cards and workspace widgets ---------- */
+.widget,
+.frappe-card {
+	background-color: var(--surface-base);
+	border: 1px solid var(--outline-gray-1);
+	border-radius: var(--myerp-radius-card);
+	box-shadow: var(--myerp-card-shadow);
+	transition: box-shadow var(--myerp-duration) var(--myerp-ease),
+		transform var(--myerp-duration) var(--myerp-ease);
+}
+
+.widget.number-widget-box:hover,
+.widget.shortcut-widget-box:hover,
+.widget.links-widget-box:hover {
+	box-shadow: var(--myerp-card-shadow-hover);
+	transform: translateY(-1px);
+}
+
+.number-widget-box .widget-content .number {
+	color: var(--ink-gray-9);
+	font-weight: 650;
+	letter-spacing: -0.02em;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+	border-radius: var(--myerp-radius-control);
+	transition: background-color var(--myerp-duration) var(--myerp-ease),
+		box-shadow var(--myerp-duration) var(--myerp-ease);
+}
+
+/* Espresso buttons (v16): brand the solid variant; red "danger" buttons keep their theme */
+.es-button:not([data-theme="red"]) {
+	--bt-solid-bg: var(--myerp-primary);
+	--bt-solid-bg-hover: var(--myerp-primary-hover);
+	--bt-solid-bg-active: var(--myerp-primary-hover);
+	--bt-solid-fg: #ffffff;
+}
+
+.btn.btn-primary {
+	background-color: var(--myerp-primary);
+	border-color: var(--myerp-primary);
+	color: #ffffff;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:focus {
+	background-color: var(--myerp-primary-hover);
+	border-color: var(--myerp-primary-hover);
+	color: #ffffff;
+}
+
+.btn:focus-visible,
+.form-control:focus,
+.dock .dock-item:focus-visible {
+	box-shadow: var(--myerp-focus-ring);
+	outline: none;
+}
+
+/* ---------- Form controls ---------- */
+.form-control {
+	border-radius: var(--myerp-radius-control);
+	border: 1px solid transparent;
+	transition: border-color var(--myerp-duration) var(--myerp-ease),
+		background-color var(--myerp-duration) var(--myerp-ease);
+}
+
+.form-control:hover {
+	border-color: var(--outline-gray-1);
+}
+
+.form-control:focus {
+	background-color: var(--surface-base);
+	border-color: var(--myerp-accent);
+}
+
+.form-section .section-head {
+	color: var(--ink-gray-9);
+	font-weight: 600;
+}
+
+/* ---------- List view ---------- */
+.list-row-head {
+	background-color: var(--surface-gray-1);
+	color: var(--ink-gray-6);
+	font-weight: 600;
+}
+
+.list-row-container .list-row {
+	transition: background-color var(--myerp-duration) var(--myerp-ease);
+}
+
+.list-row-container:hover .list-row,
+.list-row-container .list-row:hover {
+	background-color: var(--myerp-primary-soft);
+}
+
+/* ---------- Links and accents ---------- */
+.page-body a:not(.btn):not(.dropdown-item):not(.list-id):hover {
+	color: var(--myerp-accent);
+}
+
+/* ---------- Respect reduced-motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+	.widget,
+	.frappe-card,
+	.btn,
+	.form-control,
+	.standard-sidebar-item,
+	.dock .dock-item,
+	.list-row {
+		transition: none !important;
+		transform: none !important;
+	}
+}
