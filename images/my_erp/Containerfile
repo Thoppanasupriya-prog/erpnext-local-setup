@@ -1,0 +1,33 @@
+# ERPNext image with the my_erp custom app from custom_apps/my_erp.
+#
+# It starts from the official frappe/erpnext image and adds my_erp on top, so
+# Frappe and ERPNext are not rebuilt. The build context must be custom_apps/:
+#
+#   docker build -f images/my_erp/Containerfile \
+#     --build-arg ERPNEXT_VERSION=v16.54.0 \
+#     -t my-erpnext:v16.54.0 custom_apps
+#
+# Deploy the result with compose.yaml by setting, in .env:
+#   CUSTOM_IMAGE=my-erpnext  CUSTOM_TAG=v16.54.0  PULL_POLICY=never
+# See custom_apps/README.md for the full steps.
+
+ARG ERPNEXT_VERSION=v16.54.0
+FROM frappe/erpnext:${ERPNEXT_VERSION}
+
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+
+COPY --chown=frappe:frappe my_erp apps/my_erp
+
+# 1. Install the app's Python package into the bench virtualenv (editable, as bench does).
+# 2. Register it in sites/apps.txt. The image's file has no trailing newline, so add one first.
+#    This only seeds new sites volumes; an existing volume needs the step in custom_apps/README.md.
+# 3. Publish its static files. The image keeps assets in /home/frappe/frappe-bench/assets, and
+#    the entrypoint links that folder into sites/assets when a container starts.
+#    my_erp only ships plain CSS, so no `bench build` is needed. If you add *.bundle.js or
+#    *.bundle.scss files later, add `bench build --app my_erp` here.
+RUN env/bin/pip install --no-cache-dir -e apps/my_erp \
+  && sed -i -e '$a\' sites/apps.txt \
+  && (grep -qx my_erp sites/apps.txt || echo my_erp >> sites/apps.txt) \
+  && ln -sfn /home/frappe/frappe-bench/apps/my_erp/my_erp/public assets/my_erp \
+  && env/bin/python -c "import my_erp.hooks"
